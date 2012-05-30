@@ -7,6 +7,7 @@ import pickle
 import commands
 import memcache
 
+sys.path.append('../include')
 from configurations import *
 from get_nodes import get_nodes
 from MNode import MNode
@@ -44,4 +45,7 @@ def main():
     mc.set('sheldon_exit', 0)
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) != 3:
+        print "Usage:", sys.argv[0], "[nodes config file] [pairs config file]"
+    else:
+        main()
