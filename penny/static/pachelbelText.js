@@ -37,7 +37,7 @@ function parse_json(data) {
 }
 
 function pulling_loop() {
-    $.getJSON('pachelbelJSON', function(data) {
+    $.getJSON('pachelbelJSONGeoAndTopo', function(data) {
         parse_json(data);
         setTimeout(pulling_loop, 500);
     });
