@@ -21,12 +21,12 @@ def __set_mac_filtering(my_key, nodes, m_nodes):
     for key, m_node in m_nodes.items():
         if key != my_key:
             if __distance_squared(float(m_node.x), float(m_node.y), float(m_me.x), float(m_me.y)) > COMMUNICATION_RANGE * COMMUNICATION_RANGE:
-                blocked_mac.append(nodes[key]['olsr_mac'])
+                blocked_mac.append(nodes[key]['olsr_mac'].lower())
     current_iptables_listing = commands.getstatusoutput('iptables -L')[1].splitlines();
     current_blocked_mac = []
     for line in current_iptables_listing:
         if len(line.split()) >= 6 and line.split()[5] == 'MAC':
-            current_blocked_mac.append(line.split()[6])
+            current_blocked_mac.append(line.split()[6].lower())
     for mac in blocked_mac:
         if mac not in current_blocked_mac:
             commands.getstatusoutput("iptables -A INPUT -m mac --mac-source " + mac + " -j DROP")

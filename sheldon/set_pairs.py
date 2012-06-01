@@ -42,7 +42,7 @@ def set_pairs_by_nodes_and_pairs_filename(nodes, pairs_file):
     set_pairs(nodes, pairs)
 
 def set_pairs_by_filenames(nodes_file, pairs_file):
-    set_pairs_by_nodes_and_pair_filename(get_nodes(nodes_file), pairs_file)
+    set_pairs_by_nodes_and_pairs_filename(get_nodes(nodes_file), pairs_file)
 
 if __name__ == '__main__':
     set_pairs_by_filenames(sys.argv[1], sys.argv[2])

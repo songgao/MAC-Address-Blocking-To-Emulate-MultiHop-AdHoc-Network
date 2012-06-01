@@ -34,6 +34,10 @@ def move_m_node(m_node):
                     m_node.direction = MNode.SOUTH
             new_x = grid_point
         m_node.x = new_x
+        while m_node.x > max(GRID_POINTS_X):
+            m_node.x = m_node.x - (max(GRID_POINTS_X) - min(GRID_POINTS_X))
+        while m_node.x < min(GRID_POINTS_X):
+            m_node.x = m_node.x + (max(GRID_POINTS_X) - min(GRID_POINTS_X))
         
     elif m_node.direction == MNode.SOUTH:
         new_y = m_node.y - m_node.speed * UPDATE_INTERVAL
@@ -51,7 +55,11 @@ def move_m_node(m_node):
                     m_node.direction = MNode.WEST
             new_y = grid_point
         m_node.y = new_y
- 
+        while m_node.y > max(GRID_POINTS_Y):
+            m_node.y = m_node.y - (max(GRID_POINTS_Y) - min(GRID_POINTS_Y))
+        while m_node.y < min(GRID_POINTS_X):
+            m_node.y = m_node.y + (max(GRID_POINTS_Y) - min(GRID_POINTS_Y))
+
     elif m_node.direction == MNode.WEST:
         new_x = m_node.x - m_node.speed * UPDATE_INTERVAL
         grid_point = __find_grid_points(GRID_POINTS_X, m_node.x, new_x)
@@ -68,6 +76,10 @@ def move_m_node(m_node):
                     m_node.direction = MNode.NORTH
             new_x = grid_point
         m_node.x = new_x
+        while m_node.x > max(GRID_POINTS_X):
+            m_node.x = m_node.x - (max(GRID_POINTS_X) - min(GRID_POINTS_X))
+        while m_node.x < min(GRID_POINTS_X):
+            m_node.x = m_node.x + (max(GRID_POINTS_X) - min(GRID_POINTS_X))
  
     elif m_node.direction == MNode.NORTH:
         new_y = m_node.y + m_node.speed * UPDATE_INTERVAL
@@ -85,3 +97,7 @@ def move_m_node(m_node):
                     m_node.direction = MNode.EAST
             new_y = grid_point
         m_node.y = new_y
+        while m_node.y > max(GRID_POINTS_Y):
+            m_node.y = m_node.y - (max(GRID_POINTS_Y) - min(GRID_POINTS_Y))
+        while m_node.y < min(GRID_POINTS_X):
+            m_node.y = m_node.y + (max(GRID_POINTS_Y) - min(GRID_POINTS_Y))
