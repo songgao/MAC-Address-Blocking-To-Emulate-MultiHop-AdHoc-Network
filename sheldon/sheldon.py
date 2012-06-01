@@ -34,9 +34,9 @@ def main():
     for node_key in nodes:
         m_nodes[node_key] = MNode()
     print "All set up. Forking to background."
+    print "Entering mobility loop."
     if os.fork() != 0:
         exit(0)
-    print "Entering mobility loop."
     while __continue(mc):
         for key, m_node in m_nodes.items():
             move_m_node(m_node)
