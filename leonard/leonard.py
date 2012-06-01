@@ -22,9 +22,17 @@ def __set_mac_filtering(my_key, nodes, m_nodes):
         if key != my_key:
             if __distance_squared(float(m_node.x), float(m_node.y), float(m_me.x), float(m_me.y)) > COMMUNICATION_RANGE * COMMUNICATION_RANGE:
                 blocked_mac.append(nodes[key]['olsr_mac'])
-    commands.getstatusoutput('iptables --flush')
+    current_iptables_listing = commands.getstatusoutput('iptables -L')[1].splitlines();
+    current_blocked_mac = []
+    for line in current_iptables_listing:
+        if len(line.split()) >= 6 and line.split()[5] == 'MAC':
+            current_blocked_mac.append(line.split()[6])
     for mac in blocked_mac:
-        commands.getstatusoutput("iptables -A INPUT -m mac --mac-source " + mac + " -j DROP")
+        if mac not in current_blocked_mac:
+            commands.getstatusoutput("iptables -A INPUT -m mac --mac-source " + mac + " -j DROP")
+    for mac in current_blocked_mac:
+        if mac not in blocked_mac:
+            commands.getstatusoutput("iptables -D INPUT -m mac --mac-source " + mac + " -j DROP")
 
 def __inform_memcached_about_neighbor_links(my_key, mc, nodes):
     neighbors = []
@@ -47,7 +55,8 @@ def __find_myself(nodes):
     return None
 
 def main():
-    if commands.getstatusoutput("iptables --list")[0] != 0:
+    commands.getstatusoutput('iptables --flush')
+    if commands.getstatusoutput("iptables -L")[0] != 0:
         print 'iptables command test failed. Are you sure I am running with root permission?'
         exit(1)
     mc = memcache.Client([MEMCACHED_ADDR + ':' + MEMCACHED_PORT], debug = 0)
@@ -62,13 +71,16 @@ def main():
     print 'Forking into background.'
     if os.fork() !=0:
         exit(0)
-    while mc.get('leonard_exit') in (None, 0):
+    while True:
+        leonard_exit = mc.get('leonard_exit')
+        if leonard_exit in (None, 0):
+            mc.set('leonard_exit', leonard_exit - 1)
+            break;
         for key, m_node in m_nodes.items():
             m_node.update_from_memcached_str(mc.get(key))
         __set_mac_filtering(my_key, nodes, m_nodes)
         __inform_memcached_about_neighbor_links(my_key, mc, nodes)
         time.sleep(UPDATE_INTERVAL)
-    mc.set('leonard_exit', 0)
 
 if __name__ == '__main__':
     main()

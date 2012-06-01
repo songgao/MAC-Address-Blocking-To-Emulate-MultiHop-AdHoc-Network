@@ -9,17 +9,27 @@ from configurations import *
 def set_pairs(nodes, pairs):
     for pair in pairs:
         ports = ['9146', '9147', '9148', '9149']
-        cmd0 = "echo 'Setting up pair forwarding.'"
-        cmd1 = "echo 'Setting up pair forwarding.'"
+        cmd0 = "iptables -t nat --flush"
+        cmd1 = "iptables -t nat --flush"
         for port in ports:
-            cmd0 = cmd0 + " && iptables -t nat --flush && iptables -t nat -A PREROUTING -p tcp --dport " + port + " -d " + nodes[pair[0]][NODES_IF_OLSR] + " -j DNAT --to " + nodes[pair[1]][NODES_IF_FORWARD] + ":" + port + " && iptables -t nat -A POSTROUTING -p tcp --dport " + port + " -d " + nodes[pair[1]][NODES_IF_FORWARD] + " -j SNAT --to " + nodes[pair[0]][NODES_IF_OLSR]
-            cmd1 = cmd1 + " && iptables -t nat --flush && iptables -t nat -A PREROUTING -p tcp --dport " + port + " -d " + nodes[pair[1]][NODES_IF_OLSR] + " -j DNAT --to " + nodes[pair[0]][NODES_IF_FORWARD] + ":" + port + " && iptables -t nat -A POSTROUTING -p tcp --dport " + port + " -d " + nodes[pair[0]][NODES_IF_FORWARD] + " -j SNAT --to " + nodes[pair[1]][NODES_IF_OLSR]
+            # tcp forwarding on pair[0]
+            cmd0 = cmd0 + " && iptables -t nat -A PREROUTING -i " + NODES_IF_OLSR + " -p tcp --dport " + port + " -j DNAT --to " + nodes[pair[1]][NODES_IF_FORWARD] + ":" + port
+            # udp forwarding on pair[0]
+            cmd0 = cmd0 + " && iptables -t nat -A PREROUTING -i " + NODES_IF_OLSR + " -p udp --dport " + port + " -j DNAT --to " + nodes[pair[1]][NODES_IF_FORWARD] + ":" + port
+            # tcp forwarding on pair[1]
+            cmd1 = cmd1 + " && iptables -t nat -A PREROUTING -i " + NODES_IF_OLSR + " -p tcp --dport " + port + " -j DNAT --to " + nodes[pair[0]][NODES_IF_FORWARD] + ":" + port
+            # udp forwarding on pair[1]
+            cmd1 = cmd1 + " && iptables -t nat -A PREROUTING -i " + NODES_IF_OLSR + " -p udp --dport " + port + " -j DNAT --to " + nodes[pair[0]][NODES_IF_FORWARD] + ":" + port
+        # MASQUERADE on pair[0]
+        cmd0 = cmd0 + " && iptables -t nat -A POSTROUTING -o " + NODES_IF_FORWARD + " -j MASQUERADE"
+        # MASQUERADE on pair[1]
+        cmd1 = cmd1 + " && iptables -t nat -A POSTROUTING -o " + NODES_IF_FORWARD + " -j MASQUERADE"
         s0 = commands.getstatusoutput('ssh ' + NODES_USERNAME + '@' + nodes[pair[0]][NODES_IF_CONTROL] + " '" + cmd0 + "'")[0]
         s1 = commands.getstatusoutput('ssh ' + NODES_USERNAME + '@' + nodes[pair[1]][NODES_IF_CONTROL] + " '" + cmd1 + "'")[0]
         if s0 == 0 and s1 == 0:
             print pair, ' SUCCESS'
         else:
-            print pair, ' FAILED'
+            print pair, ' FAILED', s0, s1
 
 def set_pairs_by_nodes_and_pairs_filename(nodes, pairs_file):
     f = open(pairs_file, 'r')

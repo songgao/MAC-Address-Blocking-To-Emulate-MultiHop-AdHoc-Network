@@ -24,17 +24,29 @@ class MNode:
             self.direction = random.randint(0, 3)
         else:
             values = memcached_str.split()
-            self.x = values[0]
-            self.y = values[1]
-            self.speed = values[2]
-            self.direction = values[3]
+            self.x = float(values[0])
+            self.y = float(values[1])
+            self.speed = float(values[2])
+            self.direction = float(values[3])
 
     def to_memcached_str(self):
         return str(self.x) + " " + str(self.y) + " " + str(self.speed) + " " + str(self.direction)
 
     def update_from_memcached_str(self, memcached_str):
         values = memcached_str.split()
-        self.x = values[0]
-        self.y = values[1]
-        self.speed = values[2]
-        self.direction = values[3]
+        self.x = float(values[0])
+        self.y = float(values[1])
+        self.speed = float(values[2])
+        self.direction = float(values[3])
+
+    def get_direction_in_str(self):
+        if self.direction == MNode.EAST:
+            return 'E'
+        elif self.direction == MNode.WEST:
+            return 'W'
+        elif self.direction == MNode.NORTH:
+            return 'N'
+        elif self.direction == MNode.SOUTH:
+            return 'S'
+        else:
+            return None
