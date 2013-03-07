@@ -41,8 +41,9 @@ def __inform_memcached_about_neighbor_links(my_key, mc, nodes):
         if not neighbor_str or neighbor_str.isspace() or len(neighbor_str.strip()) == 0 or ('/' in neighbor_str):
             continue
         addr = neighbor_str.split()[0]
+        via_addr = neighbor_str.split()[2]
         for key, node in nodes.items():
-            if addr == node[NODES_IF_OLSR]:
+            if addr == node[NODES_IF_OLSR] and addr == via_addr:
                 neighbors.append(key)
                 break
     mc.set('neighbors_' + my_key, pickle.dumps(neighbors))
@@ -72,10 +73,10 @@ def main():
     if os.fork() !=0:
         exit(0)
     while True:
-        leonard_exit = mc.get('leonard_exit')
-        if leonard_exit in (None, 0):
-            mc.set('leonard_exit', leonard_exit - 1)
-            break;
+        #leonard_exit = mc.get('leonard_exit')
+        #if leonard_exit in (None, 0):
+        #    mc.set('leonard_exit', leonard_exit - 1)
+        #    break;
         for key, m_node in m_nodes.items():
             m_node.update_from_memcached_str(mc.get(key))
         __set_mac_filtering(my_key, nodes, m_nodes)

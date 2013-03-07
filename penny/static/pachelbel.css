@@ -4,3 +4,18 @@ body{
     padding: 0px;
 }
 
+#map_canvas {
+}
+
+#legend {
+    background-color: black;
+    position: fixed;
+    width: 240px;
+    height: 160px;
+    top: 0px;
+    left: 820px;
+    color: white;
+    padding: 16px;
+    font-weight: bold;
+    line-height: 200%;
+}

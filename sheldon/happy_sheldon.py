@@ -12,7 +12,6 @@ from configurations import *
 from get_nodes import get_nodes
 from MNode import MNode
 from set_pairs import set_pairs_by_nodes_and_pairs_filename
-from mobility import move_m_node
 
 def __continue(mc):
     # decide whether the program should continue running
@@ -34,16 +33,23 @@ def main():
     # set_pairs_by_nodes_and_pairs_filename(nodes, sys.argv[2]);
     for node_key in nodes:
         m_nodes[node_key] = MNode()
-    print "All set up. Forking to background."
-    print "Entering mobility loop."
-    if os.fork() != 0:
-        exit(0)
-    while __continue(mc):
-        for key, m_node in m_nodes.items():
-            move_m_node(m_node)
-            mc.set(key, m_node.to_memcached_str())
-        time.sleep(UPDATE_INTERVAL)
-    mc.set('sheldon_exit', 0)
+    print "All set up. Setting locations."
+    counter = 0
+    flag = True
+    for key, m_node in m_nodes.items():
+        if flag:
+            m_node.x = counter
+            m_node.y = 180
+            counter = counter + 22
+            if counter > 360:
+                counter = 0
+                flag = False
+        else:
+            m_node.x = 180
+            m_node.y = counter
+            counter = counter + 22
+        mc.set(key, m_node.to_memcached_str())
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
