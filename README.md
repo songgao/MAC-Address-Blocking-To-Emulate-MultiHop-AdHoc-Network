@@ -13,4 +13,4 @@ It operates on each node and uses iptables MAC address blocking to form a multi-
 
 **This project only does blocking, but does not consider channel congestion or interference in wireless networks. For emulation more close to realistic, including channel congestion, hidden station, etc., take a look at [squirrel](http://songgao.github.com/squirrel/).**
 
-This was built in Spring 2011, and is not being maintained any more. Use it however you want, but share-alike if possible.
+This was built in Spring 2012, and is not being maintained any more. Use it however you want, but share-alike if possible.
